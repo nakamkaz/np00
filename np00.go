@@ -5,8 +5,8 @@ import (
 	"math"
 )
 
-type array []float64
-type nparray []array
+type Array []float64
+type NParray []Array
 
 func MaxFloatInSlice(fls []float64) (m float64) {
 
@@ -45,30 +45,30 @@ func SoftMax(fls []float64) (sm []float64) {
 	return sm
 }
 
-func Makenparray(row, col int) nparray {
-	npa := make([]array, row)
+func MakeNParray(row, col int) NParray {
+	npa := make([]Array, row)
 	for z := range npa {
-		array := make([]float64, col)
-		npa[z] = array
+		Array := make([]float64, col)
+		npa[z] = Array
 	}
 	return npa
 }
 
-func (n nparray) Shape() [2]int {
+func (n NParray) Shape() [2]int {
 	row := len(n)
 	col := len(n[row-1])
 	return [2]int{row, col}
 }
 
-func (m nparray) colsToarray(col int) (fa []float64) {
-	fa = make([]float64, m.shape()[0])
+func (m NParray) colsToArray(col int) (fa []float64) {
+	fa = make([]float64, m.Shape()[0])
 	for r := range m {
 		fa[r] = m[r][col]
 	}
 	return
 }
 
-func (a array) add(b array) (f float64) {
+func (a Array) add(b Array) (f float64) {
 
 	if len(a) == len(b) {
 		for idx := range a {
@@ -78,7 +78,7 @@ func (a array) add(b array) (f float64) {
 	return f
 }
 
-func (n nparray) String() string {
+func (n NParray) String() string {
 
 	var str string = ""
 	str += fmt.Sprintf("{\n")
@@ -96,32 +96,32 @@ func (n nparray) String() string {
 	return str
 }
 
-func add(n nparray, m nparray) nparray {
+func add(n NParray, m NParray) NParray {
 
-	npa := make([]array, n.shape()[0])
+	npa := make([]Array, n.Shape()[0])
 	for z := range npa {
-		array := make([]float64, n.shape()[1])
-		npa[z] = array
+		Array := make([]float64, n.Shape()[1])
+		npa[z] = Array
 	}
 
-	if n.shape()[0] == m.shape()[0] && n.shape()[1] == m.shape()[1] {
+	if n.Shape()[0] == m.Shape()[0] && n.Shape()[1] == m.Shape()[1] {
 		for r := range n {
 			for k := range n[r] {
 				npa[r][k] = n[r][k] + m[r][k]
 			}
 		}
 	} else {
-		panic("shape check error")
+		panic("Shape check error")
 	}
 	return npa
 }
 
-func (n nparray) multi(f float64) nparray {
+func (n NParray) multi(f float64) NParray {
 
-	npa := make([]array, n.shape()[0])
+	npa := make([]Array, n.Shape()[0])
 	for z := range npa {
-		array := make([]float64, n.shape()[1])
-		npa[z] = array
+		Array := make([]float64, n.Shape()[1])
+		npa[z] = Array
 	}
 
 	for r := range n {
@@ -139,20 +139,20 @@ img: https://s3.amazonaws.com/nkvd/pub/matrixDot.png
 
 */
 
-func dot(n nparray, m nparray) nparray {
+func dot(n NParray, m NParray) NParray {
 
-	if n.shape()[1] != m.shape()[0] {
+	if n.Shape()[1] != m.Shape()[0] {
 		panic("error row x col")
 	}
 
-	npa := make([]array, n.shape()[0])
+	npa := make([]Array, n.Shape()[0])
 	for z := range npa {
-		array := make([]float64, m.shape()[1])
-		npa[z] = array
+		Array := make([]float64, m.Shape()[1])
+		npa[z] = Array
 	}
 	for ncol := range n {
 		for mrow := range m[0] {
-			npa[ncol][mrow] = n[ncol].add(m.colsToarray(mrow))
+			npa[ncol][mrow] = n[ncol].add(m.colsToArray(mrow))
 		}
 	}
 	return npa
