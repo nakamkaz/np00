@@ -64,13 +64,14 @@ func (n NParray) Shape() [2]int {
 	return [2]int{row, col}
 }
 
-func (m NParray) colsToArray(col int) (fa []float64) {
+func (m NParray) ColsToArray(col int) (fa []float64) {
 	fa = make([]float64, m.Shape()[0])
 	for r := range m {
 		fa[r] = m[r][col]
 	}
 	return
 }
+
 
 func (a Array) add(b Array) (f float64) {
 
@@ -100,7 +101,7 @@ func (n NParray) String() string {
 	return str
 }
 
-func add(n NParray, m NParray) NParray {
+func Add(n NParray, m NParray) NParray {
 
 	npa := make([]Array, n.Shape()[0])
 	for z := range npa {
@@ -120,7 +121,7 @@ func add(n NParray, m NParray) NParray {
 	return npa
 }
 
-func (n NParray) multi(f float64) NParray {
+func (n NParray) Multi(f float64) NParray {
 
 	npa := make([]Array, n.Shape()[0])
 	for z := range npa {
@@ -156,7 +157,7 @@ func Dot(n NParray, m NParray) NParray {
 	}
 	for ncol := range n {
 		for mrow := range m[0] {
-			npa[ncol][mrow] = n[ncol].add(m.colsToArray(mrow))
+			npa[ncol][mrow] = n[ncol].add(m.ColsToArray(mrow))
 		}
 	}
 	return npa
