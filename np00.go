@@ -19,6 +19,10 @@ func MaxFloatInSlice(fls []float64) (m float64) {
 	return m
 }
 
+func Sum(fls []float64) (s float64) {
+	return SumOfSlice(fls)
+}
+
 func SumOfSlice(fls []float64) (s float64) {
 	for _, e := range fls {
 		s += e
@@ -139,7 +143,7 @@ img: https://s3.amazonaws.com/nkvd/pub/matrixDot.png
 
 */
 
-func dot(n NParray, m NParray) NParray {
+func Dot(n NParray, m NParray) NParray {
 
 	if n.Shape()[1] != m.Shape()[0] {
 		panic("error row x col")
