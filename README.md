@@ -69,3 +69,6 @@ Sum of SoftMax: 1
 }
 ```
 
+* Usage 2
+
+https://gist.github.com/nakamkaz/8cd9ff25b7fec5c029a45f6bc4c58e3a
