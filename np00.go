@@ -5,8 +5,28 @@ import (
 	"math"
 )
 
+type NNetwork map[string]np00.NParray
 type Array []float64
 type NParray []Array
+
+const ROWPART = 0
+const COLPART = 1
+
+func IdentityFunction(npa NParray) NParray {
+	return npa
+}
+
+func sigmoid(f float64) float64 {
+	return 1 / (1 + math.Exp(-f))
+}
+
+func Sigmoid(npa NParray) NParray {
+	npr := MakeNParray(1, npa.Shape()[1])
+	for n, e := range npa[0] {
+		npr[0][n] = sigmoid(e)
+	}
+	return npr
+}
 
 func MaxFloatInSlice(fls []float64) (m float64) {
 
@@ -28,6 +48,13 @@ func SumOfSlice(fls []float64) (s float64) {
 		s += e
 	}
 	return s
+}
+
+// Is 'long' better?
+func (n NParray) Shape() [2]int {
+	row := len(n)
+	col := len(n[row-1])
+	return [2]int{row, col}
 }
 
 func sumExpC(fls []float64) (s float64) {
@@ -64,16 +91,28 @@ func (n NParray) Shape() [2]int {
 	return [2]int{row, col}
 }
 
-func (m NParray) ColsToArray(col int) (fa []float64) {
-	fa = make([]float64, m.Shape()[0])
+func (m NParray) ColsToArray(colid int) (fa []float64) {
+	clen := m.Shape()[ROWPART]
+	fa = make([]float64, clen)
 	for r := range m {
-		fa[r] = m[r][col]
+		fa[r] = m[r][colid]
 	}
 	return
 }
 
+func (m NParray) RowsToArray(rowid int) (fa []float64) {
+	rlen := m.Shape()[COLPART]
+	fa = make([]float64, rlen)
+	/* not required
+	for rn:=0; rn<rlen;rn++ {
+		fa[rn] = m[rowid][rn]
+	}
+	*/
+	fa = m[rowid]
+	return
+}
 
-func (a Array) add(b Array) (f float64) {
+func (a Array) Add(b Array) (f float64) {
 
 	if len(a) == len(b) {
 		for idx := range a {
@@ -86,7 +125,7 @@ func (a Array) add(b Array) (f float64) {
 func (n NParray) String() string {
 
 	var str string = ""
-	str += fmt.Sprintf("{\n")
+	str += fmt.Sprintf("(%v){\n", n.Shape())
 
 	for r := range n {
 		str += fmt.Sprintf("[ ")
@@ -137,32 +176,57 @@ func (n NParray) Multi(f float64) NParray {
 	return npa
 }
 
-/*
- [a b]  .  (c  = a*c + b*d
-            d)
-img: https://s3.amazonaws.com/nkvd/pub/matrixDot.png
+/** NParray Dot func
+(1xN) [a1 a2 a3 a4.. aN]  .
+(Nx1)   (c1
+         c2
+		 c3
+		 c4
+		 .
+		 .
+		 cN
+		 )
+===> a1*c1 + c2*c2 + a3*c3 + a4*c4 .... aN*cN (1x1)
 
+(kxN) [a1 a2 a3 ... aN]
+      [b1 b2 b3 ... bN]
+            ...
+	  [k1 k2 k3 ... kN]
+	  .
+(Nxm) (
+	   [f1 g1 ... m1]
+       [f2 g2 ... m2]
+	   [f3 g3 ... m3]
+       [...   ... m]
+       [fN gN ... mN]
+       )
+	   A DOT B　requires:
+	   B.col == A.row = N
+	   Results :
+	   new matrix has row k x , col m
+
+img: https://s3.amazonaws.com/nkvd/pub/matrixDot.png
 */
 
 func Dot(n NParray, m NParray) NParray {
 
-	if n.Shape()[1] != m.Shape()[0] {
+	if n.Shape()[COLPART] != m.Shape()[ROWPART] {
 		panic("error row x col")
 	}
 
-	npa := make([]Array, n.Shape()[0])
+	npa := make([]Array, n.Shape()[ROWPART])
 	for z := range npa {
-		Array := make([]float64, m.Shape()[1])
+		Array := make([]float64, m.Shape()[COLPART])
 		npa[z] = Array
 	}
 	for ncol := range n {
 		for mrow := range m[0] {
-			npa[ncol][mrow] = n[ncol].add(m.ColsToArray(mrow))
+			npa[ncol][mrow] = n[ncol].Add(m.ColsToArray(mrow))
 		}
 	}
 	return npa
 }
 
-func ReLU(x float64) float64{
-	return math.Max(0,x)
+func ReLU(x float64) float64 {
+	return math.Max(0, x)
 }
