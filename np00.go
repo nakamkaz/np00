@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-type NNetwork map[string]np00.NParray
+type NNetwork map[string]Parray
 type Array []float64
 type NParray []Array
 
@@ -83,12 +83,6 @@ func MakeNParray(row, col int) NParray {
 		npa[z] = Array
 	}
 	return npa
-}
-
-func (n NParray) Shape() [2]int {
-	row := len(n)
-	col := len(n[row-1])
-	return [2]int{row, col}
 }
 
 func (m NParray) ColsToArray(colid int) (fa []float64) {
