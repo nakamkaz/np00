@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-type NNetwork map[string]Parray
+type NNetwork map[string]NParray
 type Array []float64
 type NParray []Array
 
